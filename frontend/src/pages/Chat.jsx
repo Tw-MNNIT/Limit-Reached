@@ -1,9 +1,8 @@
+
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Send,
   Plus,
-  LogOut,
   MessageCircle
 } from "lucide-react";
 import api from "../services/api";
@@ -15,8 +14,6 @@ export default function Chat() {
   const [conversationId, setConversationId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [historyLoading, setHistoryLoading] = useState(true);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     loadConversations();
@@ -105,21 +102,14 @@ export default function Chat() {
     setMessage("");
   }
 
-  function logout() {
-    localStorage.removeItem("joi_token");
-    navigate("/");
-  }
-
   return (
-    <div className="chat-layout">
+    <div className="chat-workspace">
       <aside className="sidebar">
-        <h2>JOI<span>.</span></h2>
+        <p className="history-title">YOUR CHATS</p>
 
         <button onClick={newChat}>
           <Plus size={18} /> New Chat
         </button>
-
-        <p className="history-title">YOUR SPACE</p>
 
         <div className="history-list">
           {historyLoading ? (
@@ -146,10 +136,6 @@ export default function Chat() {
             ))
           )}
         </div>
-
-        <button className="logout" onClick={logout}>
-          <LogOut size={18} /> Logout
-        </button>
       </aside>
 
       <main className="chat-main">

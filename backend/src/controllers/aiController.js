@@ -1,15 +1,13 @@
-import Groq from "groq-sdk";
+
 import Conversation from "../models/Conversation.js";
 import mongoose from "mongoose";
-
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY
-});
+import { generateAIResponse } from "../services/llmService.js";
 
 export const chatWithAI = async (req, res) => {
   try {
     const { message, conversationId } = req.body;
 
+    // Validate user message
     if (!message || typeof message !== "string" || !message.trim()) {
       return res.status(400).json({
         success: false,
@@ -59,35 +57,10 @@ export const chatWithAI = async (req, res) => {
 
     await conversation.save();
 
-    console.log("JOI: Sending conversation to Groq...");
+    console.log("JOI: Sending conversation to LLM service...");
 
-    // Prepare conversation history
-    const history = conversation.messages
-      .slice(-20)
-      .map((msg) => ({
-        role: msg.role === "assistant" ? "assistant" : "user",
-        content: msg.content
-      }));
-
-    const completion = await groq.chat.completions.create({
-      model: "openai/gpt-oss-120b",
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are JOI, a helpful, friendly and intelligent personal AI assistant. Give clear, useful and well-structured answers."
-        },
-        ...history
-      ],
-      temperature: 0.7,
-      max_tokens: 1024
-    });
-
-    const reply = completion.choices[0]?.message?.content;
-
-    if (!reply) {
-      throw new Error("Groq returned an empty response.");
-    }
+    // Generate AI response through reusable LLM service
+    const reply = await generateAIResponse(conversation.messages);
 
     // Save JOI's reply
     conversation.messages.push({

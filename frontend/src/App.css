@@ -576,3 +576,186 @@
     font-size: 42px;
   }
 }
+
+/* =================================
+   SHARED APP LAYOUT
+================================= */
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background: #080d1b;
+}
+
+/* MAIN NAVIGATION */
+
+.app-sidebar {
+  width: 230px;
+  min-width: 230px;
+  min-height: 100vh;
+  padding: 28px 18px;
+  display: flex;
+  flex-direction: column;
+  background: rgba(10, 17, 34, 0.98);
+  border-right: 1px solid #253b59;
+}
+
+.app-logo {
+  font-size: 30px;
+  letter-spacing: 4px;
+  color: #ffffff;
+  text-shadow: 0 0 15px #54d9ff55;
+  padding-left: 8px;
+  margin-bottom: 45px;
+}
+
+.app-logo span {
+  color: #54d9ff;
+}
+
+.nav-heading {
+  color: #8589a4;
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin: 0 8px 15px;
+}
+
+.app-navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 13px 12px;
+  border-radius: 10px;
+  color: #b7c4d8;
+  text-decoration: none;
+  font-size: 14px;
+  transition: 0.25s;
+}
+
+.nav-link:hover {
+  background: #172e50;
+  color: #ffffff;
+}
+
+.nav-link.active {
+  background: linear-gradient(120deg, #172e50, #28204e);
+  border: 1px solid #385b83;
+  color: #54d9ff;
+  box-shadow: 0 0 15px #54d9ff18;
+}
+
+.app-logout {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 13px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  color: #b7c4d8;
+  text-align: left;
+  transition: 0.25s;
+}
+
+.app-logout:hover {
+  background: #272442;
+  color: #ff9999;
+}
+
+/* PAGE CONTENT */
+
+.app-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+}
+
+/* CHAT WORKSPACE */
+
+.chat-workspace {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 70% 45%, #172b4b 0%, transparent 45%),
+    #080d1b;
+}
+
+.chat-workspace .sidebar {
+  flex-shrink: 0;
+  min-height: 100vh;
+}
+
+.chat-workspace .chat-main {
+  min-width: 0;
+}
+
+/* PLACEHOLDER PAGES */
+
+.section-page {
+  flex: 1;
+  min-width: 0;
+  padding: 45px;
+  background-image:
+    linear-gradient(rgba(75, 120, 180, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(75, 120, 180, 0.035) 1px, transparent 1px);
+  background-size: 35px 35px;
+}
+
+.section-page h1 {
+  color: #eaf6ff;
+  font-size: 30px;
+  margin-bottom: 12px;
+}
+
+.section-page p {
+  color: #a9c8e5;
+  line-height: 1.7;
+}
+
+/* RESPONSIVE SHARED NAVIGATION */
+
+@media (max-width: 650px) {
+  .app-sidebar {
+    width: 68px;
+    min-width: 68px;
+    padding: 20px 7px;
+  }
+
+  .app-logo {
+    font-size: 21px;
+    letter-spacing: 1px;
+    text-align: center;
+    padding: 0;
+    margin-bottom: 35px;
+  }
+
+  .nav-heading,
+  .nav-link span,
+  .app-logout span {
+    display: none;
+  }
+
+  .nav-link,
+  .app-logout {
+    justify-content: center;
+    padding: 13px 5px;
+  }
+
+  .section-page {
+    padding: 25px 18px;
+  }
+
+  .section-page h1 {
+    font-size: 24px;
+  }
+}

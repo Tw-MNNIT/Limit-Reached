@@ -4,26 +4,26 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "test": "echo \"Error: no test specified\" && exit 1",
-  "dev": "nodemon src/services/server.js",
-  "start": "node src/services/server.js"
-},
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/services/server.js",
+    "start": "node src/services/server.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
-  "bcryptjs": "^3.0.3",
-  "cors": "^2.8.6",
-  "dotenv": "^18.0.10",
-  "express": "^5.3.0",
-  "express-rate-limit": "^8.7.5",
-  "helmet": "^8.3.0",
-  "jsonwebtoken": "^9.0.3",
-  "mongoose": "^9.12.2",
-  "groq-sdk": "^..."
-},
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.5",
+    "groq-sdk": "^1.6.0",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.12.2"
+  },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "nodemon": "3.1.11"
   }
 }
