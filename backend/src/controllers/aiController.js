@@ -2,6 +2,7 @@
 import Conversation from "../models/Conversation.js";
 import mongoose from "mongoose";
 import { generateAIResponse } from "../services/llmService.js";
+import { extractAndSaveMemories } from "../services/memoryService.js";
 
 export const chatWithAI = async (req, res) => {
   try {
@@ -59,7 +60,7 @@ export const chatWithAI = async (req, res) => {
 
     console.log("JOI: Sending conversation to LLM service...");
 
-    // Generate AI response through reusable LLM service
+    // Generate AI response
     const reply = await generateAIResponse(conversation.messages);
 
     // Save JOI's reply
@@ -71,6 +72,10 @@ export const chatWithAI = async (req, res) => {
     await conversation.save();
 
     console.log("JOI: Conversation saved successfully!");
+
+    // Extract memories in the background.
+    // Memory extraction failures will not affect the chat response.
+    void extractAndSaveMemories(conversation, userId);
 
     return res.status(200).json({
       success: true,

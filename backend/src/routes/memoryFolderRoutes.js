@@ -1,0 +1,22 @@
+
+import express from "express";
+
+import authMiddleware from "../middleware/authMiddleware.js";
+
+import {
+  createFolder,
+  getFolders,
+  renameFolder,
+  deleteFolder
+} from "../controllers/memoryFolderController.js";
+
+const router = express.Router();
+
+router.use(authMiddleware);
+
+router.post("/", createFolder);
+router.get("/", getFolders);
+router.put("/:id", renameFolder);
+router.delete("/:id", deleteFolder);
+
+export default router;

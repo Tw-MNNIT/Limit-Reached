@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Send,
   Plus,
@@ -15,9 +15,28 @@ export default function Chat() {
   const [loading, setLoading] = useState(false);
   const [historyLoading, setHistoryLoading] = useState(true);
 
+  const textareaRef = useRef(null);
+  const messagesEndRef = useRef(null);
+
   useEffect(() => {
     loadConversations();
   }, []);
+
+  useEffect(() => {
+    if (!textareaRef.current) return;
+
+    const textarea = textareaRef.current;
+    textarea.style.height = "auto";
+
+    const maxHeight = 220;
+    textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`;
+    textarea.style.overflowY =
+      textarea.scrollHeight > maxHeight ? "auto" : "hidden";
+  }, [message]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
 
   async function loadConversations() {
     try {
@@ -54,7 +73,6 @@ export default function Chat() {
       ]);
 
       await loadConversations();
-
     } catch (error) {
       setMessages(prev => [
         ...prev,
@@ -102,6 +120,13 @@ export default function Chat() {
     setMessage("");
   }
 
+  function handleComposerKeyDown(e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      e.currentTarget.form?.requestSubmit();
+    }
+  }
+
   return (
     <div className="chat-workspace">
       <aside className="sidebar">
@@ -119,7 +144,9 @@ export default function Chat() {
           ) : (
             conversations.map(chat => (
               <div
-                className="history-item"
+                className={`history-item ${
+                  conversationId === chat._id ? "active" : ""
+                }`}
                 key={chat._id}
                 onClick={() => openConversation(chat._id)}
                 role="button"
@@ -145,51 +172,64 @@ export default function Chat() {
         </header>
 
         <section className="messages">
-          {messages.length === 0 ? (
-            <div className="welcome">
-              <h1>How can I help you today?</h1>
-              <p>Your intelligent personal assistant is ready.</p>
-            </div>
-          ) : (
-            messages.map((msg, index) => (
-              <div
-                className={`message ${
-                  msg.sender === "You"
-                    ? "user-message"
-                    : "joi-message"
-                }`}
-                key={index}
-              >
-                <strong>{msg.sender}</strong>
-                <p>{msg.text}</p>
+          <div className="chat-conversation">
+            {messages.length === 0 ? (
+              <div className="welcome">
+                <h1>How can I help you today?</h1>
+                <p>Your intelligent personal assistant is ready.</p>
               </div>
-            ))
-          )}
+            ) : (
+              messages.map((msg, index) => (
+                <div
+                  className={`message ${
+                    msg.sender === "You"
+                      ? "user-message"
+                      : "joi-message"
+                  }`}
+                  key={index}
+                >
+                  <strong>{msg.sender}</strong>
+                  <p>{msg.text}</p>
+                </div>
+              ))
+            )}
 
-          {loading && (
-            <div className="message joi-message">
-              <strong>JOI</strong>
-              <p>Thinking...</p>
-            </div>
-          )}
+            {loading && (
+              <div className="message joi-message">
+                <strong>JOI</strong>
+                <p>Thinking...</p>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
+          </div>
         </section>
 
-        <form className="message-form" onSubmit={sendMessage}>
-          <input
-            placeholder="Ask JOI anything..."
-            value={message}
-            onChange={e => setMessage(e.target.value)}
-            disabled={loading}
-          />
+        <div className="chat-composer-area">
+          <form className="message-form" onSubmit={sendMessage}>
+            <textarea
+              ref={textareaRef}
+              placeholder="Message JOI..."
+              value={message}
+              onChange={e => setMessage(e.target.value)}
+              onKeyDown={handleComposerKeyDown}
+              disabled={loading}
+              rows={1}
+            />
 
-          <button type="submit" disabled={loading}>
-            <Send size={20} />
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={loading || !message.trim()}
+              aria-label="Send message"
+            >
+              <Send size={19} />
+            </button>
+          </form>
 
-        <p className="disclaimer">
-          JOI can make mistakes. Verify important information.
-        </p>
+          <p className="disclaimer">
+            JOI can make mistakes. Verify important information.
+          </p>
+        </div>
       </main>
     </div>
   );

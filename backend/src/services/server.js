@@ -7,10 +7,11 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 
 import connectDB from "../config/database.js";
-
+import memoryRoutes from "../routes/memoryRoutes.js";
 import authRoutes from "../routes/authRoutes.js";
 import aiRoutes from "../routes/aiRoutes.js";
 import conversationRoutes from "../routes/conversationRoutes.js";
+import memoryFolderRoutes from "../routes/memoryFolderRoutes.js";
 
 import authMiddleware from "../middleware/authMiddleware.js";
 
@@ -75,9 +76,13 @@ app.get("/api/ai/test", (req, res) => {
 
 // AI chat routes
 app.use("/api/ai", aiRoutes);
+app.use("/api/memories", memoryRoutes);
 
 // Conversation history routes
 app.use("/api/conversations", conversationRoutes);
+
+// Memory folder routes
+app.use("/api/memory-folders", memoryFolderRoutes);
 
 // Current logged-in user
 app.get("/api/auth/me", authMiddleware, (req, res) => {
