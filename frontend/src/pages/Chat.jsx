@@ -1,5 +1,7 @@
 
 import { useState, useEffect, useRef } from "react";
+import MarkdownMessage from "../components/MarkdownMessage";
+
 import {
   Send,
   Plus,
@@ -7,6 +9,7 @@ import {
   Sparkles,
   PanelLeft,
 } from "lucide-react";
+
 import api from "../services/api";
 
 export default function Chat() {
@@ -25,6 +28,7 @@ export default function Chat() {
     loadConversations();
   }, []);
 
+  // Automatically resize the message textarea
   useEffect(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
@@ -35,10 +39,12 @@ export default function Chat() {
     const nextHeight = Math.min(textarea.scrollHeight, maxHeight);
 
     textarea.style.height = `${nextHeight}px`;
+
     textarea.style.overflowY =
       textarea.scrollHeight > maxHeight ? "auto" : "hidden";
   }, [message]);
 
+  // Scroll to the latest message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({
       behavior: "smooth",
@@ -49,6 +55,7 @@ export default function Chat() {
   async function loadConversations() {
     try {
       const response = await api.get("/conversations");
+
       setConversations(response.data.conversations || []);
     } catch (error) {
       console.error("Unable to load conversations:", error);
@@ -61,9 +68,18 @@ export default function Chat() {
     e.preventDefault();
 
     const text = message.trim();
+
     if (!text || loading) return;
 
-    setMessages((prev) => [...prev, { text, sender: "You" }]);
+    // Add the user's message immediately
+    setMessages((prev) => [
+      ...prev,
+      {
+        text,
+        sender: "You",
+      },
+    ]);
+
     setMessage("");
     setLoading(true);
 
@@ -75,9 +91,13 @@ export default function Chat() {
 
       setConversationId(response.data.conversationId);
 
+      // Add JOI's response
       setMessages((prev) => [
         ...prev,
-        { text: response.data.reply, sender: "JOI" },
+        {
+          text: response.data.reply,
+          sender: "JOI",
+        },
       ]);
 
       await loadConversations();
@@ -103,6 +123,7 @@ export default function Chat() {
 
     try {
       const response = await api.get(`/conversations/${id}`);
+
       const conversation = response.data.conversation;
 
       setConversationId(conversation._id);
@@ -115,6 +136,7 @@ export default function Chat() {
       );
     } catch (error) {
       console.error("Unable to open conversation:", error);
+
       alert(
         error.response?.data?.message ||
           "Unable to open this conversation."
@@ -128,14 +150,44 @@ export default function Chat() {
     setConversationId(null);
     setMessages([]);
     setMessage("");
+
     textareaRef.current?.focus();
   }
 
   function handleComposerKeyDown(e) {
-    if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
+    if (
+      e.key === "Enter" &&
+      !e.shiftKey &&
+      !e.nativeEvent.isComposing
+    ) {
       e.preventDefault();
       e.currentTarget.form?.requestSubmit();
     }
+  }
+
+  function renderMessageContent(msg) {
+    // User messages remain plain text
+    if (msg.sender === "You") {
+      return (
+        <div className="user-message-text">
+          {msg.text}
+        </div>
+      );
+    }
+
+    // Error messages remain plain text
+    if (msg.isError) {
+      return (
+        <div className="assistant-error-text">
+          {msg.text}
+        </div>
+      );
+    }
+
+    // Render JOI's Markdown response properly
+    return (
+      <MarkdownMessage content={msg.text} />
+    );
   }
 
   return (
@@ -168,7 +220,9 @@ export default function Chat() {
 
           <div className="history-list">
             {historyLoading ? (
-              <p className="history-empty">Loading chats...</p>
+              <p className="history-empty">
+                Loading chats...
+              </p>
             ) : conversations.length === 0 ? (
               <p className="history-empty">
                 Your conversations will appear here.
@@ -186,7 +240,10 @@ export default function Chat() {
                   title={chat.title || "New Chat"}
                 >
                   <MessageCircle size={16} />
-                  <span>{chat.title || "New Chat"}</span>
+
+                  <span>
+                    {chat.title || "New Chat"}
+                  </span>
                 </button>
               ))
             )}
@@ -214,7 +271,10 @@ export default function Chat() {
             </div>
 
             <div>
-              <span className="chat-assistant-name">JOI Assistant</span>
+              <span className="chat-assistant-name">
+                JOI Assistant
+              </span>
+
               <span className="chat-assistant-status">
                 <span className="online-dot" />
                 Ready to help
@@ -223,7 +283,10 @@ export default function Chat() {
           </div>
         </header>
 
-        <section className="messages" aria-live="polite">
+        <section
+          className="messages"
+          aria-live="polite"
+        >
           <div className="chat-conversation">
             {messages.length === 0 ? (
               <div className="welcome">
@@ -231,7 +294,9 @@ export default function Chat() {
                   <Sparkles size={25} />
                 </div>
 
-                <p className="welcome-eyebrow">YOUR AI COMPANION</p>
+                <p className="welcome-eyebrow">
+                  YOUR AI COMPANION
+                </p>
 
                 <h1>
                   How can I help
@@ -251,7 +316,9 @@ export default function Chat() {
                 return (
                   <div
                     className={`message-row ${
-                      isUser ? "message-row-user" : "message-row-joi"
+                      isUser
+                        ? "message-row-user"
+                        : "message-row-joi"
                     }`}
                     key={`${index}-${msg.sender}`}
                   >
@@ -263,13 +330,20 @@ export default function Chat() {
 
                     <div
                       className={`message ${
-                        isUser ? "user-message" : "joi-message"
-                      } ${msg.isError ? "message-error" : ""}`}
+                        isUser
+                          ? "user-message"
+                          : "joi-message"
+                      } ${
+                        msg.isError ? "message-error" : ""
+                      }`}
                     >
                       <span className="message-sender">
                         {isUser ? "You" : "JOI"}
                       </span>
-                      <p>{msg.text}</p>
+
+                      <div className="message-content">
+                        {renderMessageContent(msg)}
+                      </div>
                     </div>
                   </div>
                 );
@@ -283,8 +357,14 @@ export default function Chat() {
                 </div>
 
                 <div className="message joi-message typing-message">
-                  <span className="message-sender">JOI</span>
-                  <div className="typing-indicator" aria-label="JOI is thinking">
+                  <span className="message-sender">
+                    JOI
+                  </span>
+
+                  <div
+                    className="typing-indicator"
+                    aria-label="JOI is thinking"
+                  >
                     <span />
                     <span />
                     <span />
@@ -298,7 +378,10 @@ export default function Chat() {
         </section>
 
         <div className="chat-composer-area">
-          <form className="message-form" onSubmit={sendMessage}>
+          <form
+            className="message-form"
+            onSubmit={sendMessage}
+          >
             <textarea
               ref={textareaRef}
               className="message-textarea"
