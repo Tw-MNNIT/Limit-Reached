@@ -1,4 +1,6 @@
-
+import {
+  retrieveRelevantMemories
+} from "../services/memoryRetrievalService.js";
 import Conversation from "../models/Conversation.js";
 import mongoose from "mongoose";
 import { generateAIResponse } from "../services/llmService.js";
@@ -85,7 +87,32 @@ export const chatWithAI = async (req, res) => {
     );
 
     // Generate JOI's response
-    const reply = await generateAIResponse(conversationHistory);
+    // Retrieve relevant memories for the authenticated user.
+const relevantMemories = await retrieveRelevantMemories(
+  userMessage,
+  userId
+);
+
+
+console.log(
+  `JOI: Retrieved ${relevantMemories.length} relevant memories.`
+);
+
+console.log(
+  "JOI retrieved memory details:",
+  relevantMemories.map((memory) => ({
+    title: memory.title,
+    summary: memory.summary,
+    status: memory.status,
+    importance: memory.importance
+  }))
+);
+
+// Generate JOI's response with relevant memory context.
+const reply = await generateAIResponse(
+  conversationHistory,
+  relevantMemories
+);
 
     if (typeof reply !== "string" || !reply.trim()) {
       throw new Error("The AI service returned an empty response.");
