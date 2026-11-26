@@ -5,7 +5,8 @@ import {
   Brain,
   Settings,
   Wrench,
-  LogOut
+  LogOut,
+  Flame,
 } from "lucide-react";
 
 export default function ProtectedLayout() {
@@ -13,22 +14,33 @@ export default function ProtectedLayout() {
 
   function logout() {
     localStorage.removeItem("joi_token");
-    navigate("/");
+    navigate("/", { replace: true });
   }
 
   const navItems = [
     { name: "Chat", path: "/chat", icon: MessageCircle },
     { name: "Memory Bank", path: "/memory", icon: Brain },
     { name: "Settings", path: "/settings", icon: Settings },
-    { name: "Tools", path: "/tools", icon: Wrench }
+    { name: "Tools", path: "/tools", icon: Wrench },
   ];
 
   return (
     <div className="app-layout">
       <aside className="app-sidebar">
-        <h2 className="app-logo">
-          JOI<span>.</span>
-        </h2>
+        <div className="sidebar-brand">
+          <div className="brand-icon">
+            <Flame size={21} />
+          </div>
+
+          <div className="brand-text">
+            <h2 className="app-logo">
+              JOI<span>.</span>
+            </h2>
+            <p>AI COMPANION</p>
+          </div>
+        </div>
+
+        <div className="sidebar-divider" />
 
         <p className="nav-heading">WORKSPACE</p>
 
@@ -44,17 +56,24 @@ export default function ProtectedLayout() {
                   `nav-link ${isActive ? "active" : ""}`
                 }
               >
-                <Icon size={19} />
+                <Icon size={19} strokeWidth={1.8} />
                 <span>{item.name}</span>
               </NavLink>
             );
           })}
         </nav>
 
-        <button className="app-logout" onClick={logout}>
-          <LogOut size={19} />
-          <span>Logout</span>
-        </button>
+        <div className="sidebar-bottom">
+          <div className="sidebar-status">
+            <span className="status-indicator" />
+            <span>JOI is ready</span>
+          </div>
+
+          <button className="app-logout" onClick={logout}>
+            <LogOut size={18} />
+            <span>Logout</span>
+          </button>
+        </div>
       </aside>
 
       <main className="app-content">

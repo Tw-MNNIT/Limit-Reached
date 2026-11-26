@@ -1,5 +1,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
+:root {
+  /* Obsidian & Ember palette */
+  --color-obsidian: #171513;
+  --color-soft: #211c19;
+  --color-charcoal: #302823;
+  --color-brown: #49362b;
+
+  --color-ember: #c8754d;
+  --color-ember-deep: #a95f3d;
+  --color-glow: #e8b98a;
+
+  --color-text: #f5ede4;
+  --color-text-soft: #c9b9ab;
+  --color-text-muted: #9d8d80;
+
+  --color-border: rgba(200, 117, 77, 0.18);
+  --color-border-hover: rgba(200, 117, 77, 0.4);
+
+  --color-selection: rgba(200, 117, 77, 0.35);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -12,15 +33,16 @@ html {
 
 body {
   font-family: 'Inter', sans-serif;
-  background: #080d1b;
-  color: #f0f6ff;
+  background: var(--color-obsidian);
+  color: var(--color-text);
   min-width: 320px;
   min-height: 100vh;
 }
 
 button,
 input,
-textarea {
+textarea,
+select {
   font: inherit;
 }
 
@@ -28,8 +50,10 @@ button {
   cursor: pointer;
 }
 
-input {
-  color: #ffffff;
+input,
+textarea,
+select {
+  color: var(--color-text);
 }
 
 #root {
@@ -38,19 +62,24 @@ input {
 }
 
 ::selection {
-  background: #6550d9;
-  color: white;
+  background: var(--color-selection);
+  color: var(--color-text);
 }
 
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #080d1b;
+  background: var(--color-obsidian);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #345779;
+  background: var(--color-brown);
   border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ember-deep);
 }
